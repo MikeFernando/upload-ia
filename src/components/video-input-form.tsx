@@ -12,6 +12,10 @@ import { api } from "@/lib/api";
 
 type Status = 'waiting' | 'converting' | 'uploading' | 'generating' | 'success';
 
+interface Props {
+  onVideoUploaded: (id: string) => void;
+}
+
 const statusMessage = {
   converting: 'Convertendo...',
   uploading: 'Carregando...',
@@ -19,7 +23,7 @@ const statusMessage = {
   success: 'Sucesso!'
 }
 
-export function VideoInputForm() {
+export function VideoInputForm(props: Props) {
   const [videoFile, setVideoFile] = React.useState<File | null>(null)
   const [status, setStatus] = React.useState<Status>('waiting')
   
@@ -94,6 +98,8 @@ export function VideoInputForm() {
     })
 
     setStatus('success')
+
+    props.onVideoUploaded(videoId)
   }
 
   const previewURL = React.useMemo(() => {
