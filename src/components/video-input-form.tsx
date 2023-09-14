@@ -8,9 +8,24 @@ import { Separator } from "@radix-ui/react-separator";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
+import { api } from "@/lib/api";
 
-export function VideoInputForm() {
+type Status = 'waiting' | 'converting' | 'uploading' | 'generating' | 'success';
+
+interface Props {
+  onVideoUploaded: (id: string) => void;
+}
+
+const statusMessage = {
+  converting: 'Convertendo...',
+  uploading: 'Carregando...',
+  generating: 'Transcrevendo...',
+  success: 'Sucesso!'
+}
+
+export function VideoInputForm(props: Props) {
   const [videoFile, setVideoFile] = React.useState<File | null>(null)
+  const [status, setStatus] = React.useState<Status>('waiting')
   
   const promptInputRef = React.useRef<HTMLTextAreaElement>(null)
 
@@ -67,9 +82,24 @@ export function VideoInputForm() {
     if (!videoFile) return
 
     // convert video in audio
-    
+    setStatus('converting')
     const audioFile = await convertVideoToAudio(videoFile)
-    console.log(audioFile)
+    const data = new FormData()
+
+    data.append('file', audioFile)
+
+    setStatus('uploading')
+    const response = await api.post('/videos', data)
+
+    const videoId = response.data.video.id
+    setStatus('generating')
+    await api.post(`/videos/${videoId}/transcription`, {
+      prompt
+    })
+
+    setStatus('success')
+
+    props.onVideoUploaded(videoId)
   }
 
   const previewURL = React.useMemo(() => {
@@ -112,15 +142,25 @@ export function VideoInputForm() {
         <Label htmlFor="transcription_prompt">Prompt de transcrição</Label>
         <Textarea
           ref={promptInputRef}
+          disabled={status !== 'waiting'}
           id="transcription_prompt" 
           placeholder="Inclua palavras-chaves mencionadas no vídeo separadas por vírgula (,)"
           className="h-20 leading-relaxed resize-none"
           />
       </div>
 
-      <Button type="submit" className="w-full">
-        <Upload className="w-4 h-4 ml-2" />
-        Carregar video
+      <Button
+        data-success={status === 'success'}
+        disabled={status !== 'waiting'} 
+        type="submit" 
+        className="w-full data-[success=true]:bg-emerald-400"
+      >
+        {status === 'waiting' 
+        ? (<>
+            <Upload className="w-4 h-4 ml-2" />
+            Carregar video
+          </>)
+        : statusMessage[status]}
       </Button>
     </form>
   )
