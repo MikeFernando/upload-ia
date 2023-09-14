@@ -7,8 +7,14 @@ import { Textarea } from "./components/ui/textarea";
 import { Button } from "./components/ui/button";
 import { Slider } from "./components/ui/slider";
 import { Label } from "./components/ui/label";
+import { PromptSelect } from './components/prompt-select';
 
 export function App() {
+  function handlePromptSelect(template: string) {
+    console.log(template);
+    
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex items-center justify-between px-6 py-3 border-b">
@@ -51,16 +57,7 @@ export function App() {
           <form className="space-y-6">
           <div className="space-y-2">
               <Label htmlFor="">Prompt</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um prompt..." />
-                </SelectTrigger>
-
-                <SelectContent>
-                  <SelectItem value="title">Título do YouTube</SelectItem>
-                  <SelectItem value="description">Descrição do YouTube</SelectItem>
-                </SelectContent>
-              </Select>
+              <PromptSelect onPromptSelected={handlePromptSelect} />
             </div>
 
             <div className="space-y-2">
