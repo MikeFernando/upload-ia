@@ -1,10 +1,12 @@
-import { Button } from "./components/ui/button";
 import { Github, Wand2 } from 'lucide-react'
+
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select";
+import { VideoInputForm } from './components/video-input-form'
 import { Separator } from "./components/ui/separator";
 import { Textarea } from "./components/ui/textarea";
-import { Label } from "./components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select";
+import { Button } from "./components/ui/button";
 import { Slider } from "./components/ui/slider";
+import { Label } from "./components/ui/label";
 
 export function App() {
   return (
@@ -42,7 +44,7 @@ export function App() {
           </p>
         </div>
         <aside className="space-y-6 w-80">
-          
+          <VideoInputForm />
 
           <Separator />
 
